@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ParçaBul 7.0 – Parçan Hazır, Yolun Açık!</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        /* --- TASARIM (Grok'un Modern Arayüzü) --- */
+        :root{--ana:#e74c3c;--yesil:#27ae60;--mavi:#3498db;--sari:#f39c12;--beyaz:#fff;--acik:#f8f9fa;--gri:#95a5a6}
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{background:linear-gradient(135deg,#a8edea 0%,#fed6e3 100%);font-family:'Segoe UI',sans-serif;color:#333;min-height:100vh}
+        
+        header{background:linear-gradient(135deg,var(--mavi),var(--yesil));padding:15px 0;position:sticky;top:0;z-index:100;box-shadow:0 5px 20px rgba(0,0,0,0.1);text-align:center}
+        .logo{font-size:32px;font-weight:900;color:var(--beyaz);margin-bottom:5px}
+        .slogan{font-size:16px;color:var(--sari);font-style:italic;animation:pulse 2s infinite}
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.7}}
+        .logo i{color:var(--sari);animation:spin 3s linear infinite}
+        @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+        
+        .container{max-width:1400px;margin:0 auto;padding:20px;display:grid;grid-template-columns:280px 1fr;gap:25px}
+        
+        /* Sidebar (Filtreler) */
+        .sidebar{background:var(--beyaz);border-radius:16px;padding:20px;height:fit-content;position:sticky;top:90px;box-shadow:0 10px 30px rgba(0,0,0,0.1)}
+        .sidebar h3{color:var(--ana);margin-bottom:15px;font-size:18px;border-bottom:2px solid var(--yesil);padding-bottom:5px}
+        select{width:100%;padding:12px;margin:8px 0;border-radius:12px;background:var(--acik);border:1px solid var(--gri);color:var(--koyu);transition:0.3s}
+        select:focus{box-shadow:0 0 10px var(--mavi);border-color:var(--mavi)}
+        
+        .bot-buton{background:var(--gri);color:var(--beyaz);padding:12px;border:none;border-radius:25px;width:100%;font-weight:bold;cursor:pointer;margin-top:10px;transition:0.3s}
+        .bot-buton:hover{background:var(--ana)}
+
+        /* Ana İçerik */
+        .main{background:var(--beyaz);border-radius:16px;padding:20px;box-shadow:0 10px 30px rgba(0,0,0,0.1)}
+        .arama-kutusu{width:100%;padding:18px 20px;font-size:18px;border:none;border-radius:50px;background:var(--acik);color:var(--koyu);box-shadow:0 5px 15px rgba(0,0,0,0.1);margin-bottom:20px;transition:0.3s}
+        .arama-kutusu:focus{box-shadow:0 0 15px var(--yesil)}
+        
+        /* Sonuç Kartları */
+        .sonuclar{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px}
+        .kart{background:var(--beyaz);border-radius:16px;overflow:hidden;transition:0.4s;box-shadow:0 8px 25px rgba(0,0,0,0.1)}
+        .kart:hover{transform:translateY(-8px);box-shadow:0 15px 35px rgba(0,0,0,0.15)}
+        .kart img{width:100%;height:150px;object-fit:cover;background:linear-gradient(45deg,var(--mavi),var(--yesil)); display: flex; align-items: center; justify-content: center; color: white; font-size: 20px; font-weight: bold;}
+        
+        .icerik{padding:20px}
+        .baslik{font-size:18px;font-weight:700;color:#333;margin-bottom:8px}
+        .oem{color:var(--gri);font-size:13px;margin-bottom:10px}
+        
+        .fiyatlar{margin:15px 0}
+        .satir{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid var(--acik)}
+        .en-ucuz{background:var(--yesil);color:var(--beyaz);padding:4px 8px;border-radius:20px;font-size:11px}
+        .fiyat{font-size:18px;font-weight:900;color:var(--ana)}
+        
+        .btn{background:var(--mavi);color:var(--beyaz);padding:6px 12px;border-radius:25px;text-decoration:none;display:inline-block;font-size: 14px; transition:0.3s}
+        .btn:hover{background:var(--ana);transform:scale(1.05)}
+        
+        .tasarruf{background:var(--sari);color:var(--beyaz);padding:8px 12px;border-radius:20px;font-size:13px;margin-top:10px;display:inline-block;animation:bounce 1s infinite}
+        @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+
+        @media (max-width:992px){.container{grid-template-columns:1fr}}
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo"><i class="fas fa-car-battery"></i> ParçaBul</div>
+    <div class="slogan">En Ucuz Parça Cebinde!</div>
+</header>
+
+<div class="container">
+    <div class="sidebar">
+        <h3><i class="fas fa-filter"></i> Hızlı Filtre</h3>
+        <select id="marka" onchange="filtrele()"><option value="">Tüm Markalar</option></select>
+        <select id="model" onchange="filtrele()"><option value="">Tüm Modeller</option></select>
+        <select id="yil" onchange="filtrele()"><option value="">Yıl Aralığı</option></select>
+        <select id="tur" onchange="filtrele()"><option value="">Parça Türü</option><option>Yağ Bakım Seti</option><option>Filtre</option><option>Balata</option><option>Silecek</option><option>Akü</option><option>Motor</option><option>Kaporta</option><option>Aksesuar</option></select>
+        <button onclick="temizle()" class="bot-buton"><i class="fas fa-sync"></i> Filtreleri Temizle</button>
+    </div>
+
+    <div class="main">
+        <input type="text" class="arama-kutusu" placeholder="Parça ara... (Örn: Egea Balata, Castrol Yağ)" onkeyup="ara(this.value)" autofocus>
+        <div class="sonuclar" id="sonuc"></div>
+    </div>
+</div>
+
+<script>
+    // --- VERİTABANI (En Çok Aranan Parçalar) ---
+    const db = [
+        // --- FIAT EGEA ---
+        {
+            ad:"Fiat Egea 1.4 Benzinli Yağ Bakım Seti (3'lü)", 
+            marka:"Fiat", model:"Egea", yil:"2015-2023", tur:"Yağ Bakım Seti", oem:"73500049", tip:"Orijinal (Opar)", 
+            fiyatlar:[
+                {site:"N11", fiyat:450, link:"https://www.n11.com/arama?q=fiat+egea+1.4+bakim+seti+opar"},
+                {site:"Trendyol", fiyat:475, link:"https://www.trendyol.com/sr?q=fiat+egea+1.4+bakim+seti+opar"},
+                {site:"ParcaOfisi", fiyat:440, link:"https://www.google.com/search?q=fiat+egea+1.4+bakim+seti+fiyat"}
+            ]
+        },
+        {
+            ad:"Fiat Egea Ön Fren Balata Takımı", 
+            marka:"Fiat", model:"Egea", yil:"2015-2023", tur:"Balata", oem:"77366019", tip:"Orijinal (Opar)", 
+            fiyatlar:[
+                {site:"AloParca", fiyat:600, link:"https://www.aloparca.com/arama/77366019"},
+                {site:"Trendyol", fiyat:650, link:"https://www.trendyol.com/sr?q=fiat+egea+on+balata+opar"},
+                {site:"Akakçe", fiyat:590, link:"https://www.akakce.com/arama/?q=fiat+egea+on+balata"}
+            ]
+        },
+        {
+            ad:"Fiat Egea 1.3 Multijet Zincir Seti", 
+            marka:"Fiat", model:"Egea", yil:"2015-2020", tur:"Motor", oem:"55266966", tip:"Orijinal (Lancia)", 
+            fiyatlar:[
+                {site:"Parcacim", fiyat:1800, link:"https://www.google.com/search?q=fiat+egea+1.3+zincir+seti+fiyat"},
+                {site:"N11", fiyat:1950, link:"https://www.n11.com/arama?q=fiat+egea+1.3+zincir+seti"}
+            ]
+        },
+
+        // --- RENAULT CLIO ---
+        {
+            ad:"Renault Clio 4 Ön Tampon (Boyasız)", 
+            marka:"Renault", model:"Clio 4", yil:"2012-2019", tur:"Kaporta", oem:"620224647R", tip:"Yan Sanayi", 
+            fiyatlar:[
+                {site:"OtoErdem", fiyat:1200, link:"https://www.google.com/search?q=clio+4+on+tampon+fiyat"},
+                {site:"Trendyol", fiyat:1400, link:"https://www.trendyol.com/sr?q=clio+4+on+tampon"}
+            ]
+        },
+        {
+            ad:"Renault Clio 5 (2019+) Ön Fren Balata Takımı", 
+            marka:"Renault", model:"Clio 5", yil:"2019-2024", tur:"Balata", oem:"FDB4180W", tip:"Orijinal", 
+            fiyatlar:[
+                {site:"OnlineYedekParca", fiyat:470, link:"https://www.onlineyedekparca.com/urun/renault-clio-5-2019-on-fren-balata-takimi-feredo-marka"}, 
+                {site:"Trendyol", fiyat:460, link:"https://www.trendyol.com/sr?q=clio+5+balata"}
+            ]
+        },
+        {
+            ad:"Renault Clio 4 1.5 dCi Triger Seti (Devirdaimli)", 
+            marka:"Renault", model:"Clio 4", yil:"2012-2018", tur:"Motor", oem:"7701477028", tip:"Orijinal (Mais)", 
+            fiyatlar:[
+                {site:"Hepsiburada", fiyat:2500, link:"https://www.hepsiburada.com/ara?q=clio+4+triger+seti+mais"},
+                {site:"N11", fiyat:2600, link:"https://www.n11.com/arama?q=clio+4+triger+seti+mais"}
+            ]
+        },
+
+        // --- FORD ---
+        {
+            ad:"Ford Focus 3 Silecek Seti (Muz Tipi)", 
+            marka:"Ford", model:"Focus 3", yil:"2011-2018", tur:"Silecek", oem:"1756614", tip:"Bosch AeroTwin", 
+            fiyatlar:[
+                {site:"Hepsiburada", fiyat:250, link:"https://www.hepsiburada.com/ara?q=focus+3+bosch+silecek"},
+                {site:"N11", fiyat:260, link:"https://www.n11.com/arama?q=focus+3+bosch+silecek"}
+            ]
+        },
+        {
+            ad:"Ford Transit V363 Mazot Filtresi", 
+            marka:"Ford", model:"Transit", yil:"2014-2022", tur:"Filtre", oem:"GK21-9176-AA", tip:"Orijinal (Otosan)", 
+            fiyatlar:[
+                {site:"ParcaOfisi", fiyat:650, link:"https://www.google.com/search?q=ford+transit+mazot+filtresi+fiyat"},
+                {site:"Trendyol", fiyat:700, link:"https://www.trendyol.com/sr?q=ford+transit+mazot+filtresi"}
+            ]
+        },
+
+        // --- VW ---
+        {
+            ad:"VW Passat B8 DSG Volan (Oynar Göbek)", 
+            marka:"VW", model:"Passat", yil:"2015-2020", tur:"Motor", oem:"03L105266E", tip:"LUK Marka", 
+            fiyatlar:[
+                {site:"OtoParcaci", fiyat:9500, link:"https://www.google.com/search?q=passat+b8+dsg+volan+fiyat"},
+                {site:"N11", fiyat:9800, link:"https://www.n11.com/arama?q=passat+b8+luk+volan"}
+            ]
+        },
+        {
+            ad:"VW Golf 7 Polen Filtresi (Karbonlu)", 
+            marka:"VW", model:"Golf 7", yil:"2013-2019", tur:"Filtre", oem:"5Q0819653", tip:"Mann Filter", 
+            fiyatlar:[
+                {site:"Hepsiburada", fiyat:350, link:"https://www.hepsiburada.com/ara?q=golf+7+mann+polen+filtresi"},
+                {site:"Trendyol", fiyat:370, link:"https://www.trendyol.com/sr?q=golf+7+mann+polen"}
+            ]
+        },
+
+        // --- TOYOTA ---
+        {
+            ad:"Toyota Corolla 1.6 Benzinli Buji Takımı (4'lü)", 
+            marka:"Toyota", model:"Corolla", yil:"2013-2018", tur:"Motor", oem:"90919-01253", tip:"Denso", 
+            fiyatlar:[
+                {site:"JaponYedek", fiyat:1200, link:"https://www.google.com/search?q=toyota+corolla+buji+takimi+fiyat"},
+                {site:"N11", fiyat:1250, link:"https://www.n11.com/arama?q=toyota+corolla+denso+buji"}
+            ]
+        },
+
+        // --- HONDA ---
+        {
+            ad:"Honda Civic FC5 Ön Tampon Eki (Typer Bodykit)", 
+            marka:"Honda", model:"Civic", yil:"2016-2021", tur:"Aksesuar", oem:"BODY-FC5", tip:"Plastik", 
+            fiyatlar:[
+                {site:"Hepsiburada", fiyat:900, link:"https://www.hepsiburada.com/ara?q=civic+fc5+tampon+eki"},
+                {site:"Trendyol", fiyat:850, link:"https://www.trendyol.com/sr?q=civic+fc5+bodykit"}
+            ]
+        },
+
+        // --- GENEL (AKÜ & YAĞ) ---
+        {
+            ad:"Varta 72 Amper Akü (Blue Dynamic)", 
+            marka:"Genel", model:"Tümü", yil:"2024", tur:"Akü", oem:"E43", tip:"Varta", 
+            fiyatlar:[
+                {site:"AküDünyası", fiyat:2800, link:"https://www.google.com/search?q=varta+72+amper+aku+fiyat"},
+                {site:"N11", fiyat:2900, link:"https://www.n11.com/arama?q=varta+72+amper+aku"},
+                {site:"Trendyol", fiyat:2850, link:"https://www.trendyol.com/sr?q=varta+72+amper"}
+            ]
+        },
+        {
+            ad:"Castrol Edge 5W-30 Motor Yağı (4 Litre)", 
+            marka:"Genel", model:"Tümü", yil:"2024", tur:"Yağ Bakım Seti", oem:"5W30-LL", tip:"Castrol", 
+            fiyatlar:[
+                {site:"Hepsiburada", fiyat:950, link:"https://www.hepsiburada.com/ara?q=castrol+5w30+4+litre"},
+                {site:"Trendyol", fiyat:980, link:"https://www.trendyol.com/sr?q=castrol+5w30+4+litre"},
+                {site:"PetrolOfisi", fiyat:1100, link:"https://www.google.com/search?q=castrol+5w30+fiyat"}
+            ]
+        }
+    ];
+
+    // --- SİSTEM ÇALIŞMA MANTIĞI ---
+
+    // Filtreleri Doldur
+    const markalar = [...new Set(db.map(p => p.marka))].sort();
+    document.getElementById('marka').innerHTML = '<option value="">Tüm Markalar</option>' + markalar.map(m => `<option value="${m}">${m}</option>`).join('');
+    
+    const modeller = [...new Set(db.map(p => p.model))].sort();
+    document.getElementById('model').innerHTML = '<option value="">Tüm Modeller</option>' + modeller.map(m => `<option value="${m}">${m}</option>`).join('');
+    
+    const yillar = [...new Set(db.map(p => p.yil))].sort();
+    document.getElementById('yil').innerHTML = '<option value="">Yıl Aralığı</option>' + yillar.map(y => `<option value="${y}">${y}</option>`).join('');
+
+    let filtered = [...db];
+
+    function ara(val){
+        val = val.toLowerCase().trim();
+        filtrele(val);
+    }
+
+    function filtrele(kelime=""){
+        let veri = db;
+        // Arama kutusu kontrolü
+        if(typeof kelime === 'string' && kelime.length > 0) {
+            veri = db.filter(p => p.ad.toLowerCase().includes(kelime) || p.model.toLowerCase().includes(kelime));
+        }
+        
+        // Dropdown filtrelerini al
+        const marka = document.getElementById("marka").value;
+        const model = document.getElementById("model").value;
+        const yil = document.getElementById("yil").value;
+        const tur = document.getElementById("tur").value;
+
+        // Filtreleri uygula
+        if(marka) veri = veri.filter(p => p.marka === marka);
+        if(model) veri = veri.filter(p => p.model === model);
+        if(yil) veri = veri.filter(p => p.yil === yil);
+        if(tur) veri = veri.filter(p => p.tur === tur);
+
+        filtered = veri;
+        render();
+    }
+
+    function render(){
+        const div = document.getElementById("sonuc");
+        div.innerHTML = "";
+        
+        if(filtered.length === 0){
+            div.innerHTML = "<p style='text-align:center;color:#95a5a6;padding:50px;font-size:18px'><i class='fas fa-search fa-3x'></i><br><br>Aradığın parça bulunamadı.</p>";
+            return;
+        }
+
+        filtered.forEach(p => {
+            // Fiyatları ucuzdan pahalıya sırala
+            p.fiyatlar.sort((a,b) => a.fiyat - b.fiyat);
+            const tasarruf = p.fiyatlar[p.fiyatlar.length-1].fiyat - p.fiyatlar[0].fiyat;
+            
+            // Kart HTML'i
+            div.innerHTML += `
+                <div class="kart">
+                    <div style="height:150px; background:linear-gradient(45deg,#3498db,#27ae60); display:flex; align-items:center; justify-content:center; color:white; font-size:24px; font-weight:bold;">
+                        ${p.marka}
+                    </div>
+                    
+                    <div class="icerik">
+                        <div class="baslik">${p.ad}</div>
+                        <div class="oem">OEM: ${p.oem} | ${p.tur}</div>
+                        
+                        <div class="fiyatlar">
+                            ${p.fiyatlar.map((s,i) => `
+                                <div class="satir">
+                                    <div style="font-weight:600; color:#555;">${s.site} ${i===0 ? '<span class="en-ucuz">En Ucuz</span>' : ''}</div>
+                                    <div>
+                                        <span class="fiyat">${s.fiyat} ₺</span> 
+                                        <a href="${s.link}" target="_blank" class="btn">Git ></a>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                        
+                        ${tasarruf > 0 ? `<div class="tasarruf">Bu üründe ${tasarruf} ₺ Kâr Et!</div>` : ''}
+                    </div>
+                </div>`;
+        });
+    }
+
+    function temizle(){
+        document.querySelectorAll('select').forEach(s => s.value = '');
+        document.querySelector('.arama-kutusu').value = '';
+        filtered = db;
+        render();
+    }
+
+    // Sayfa açılınca çalıştır
+    window.onload = () => { render(); };
+</script>
+
+</body>
+</html>
